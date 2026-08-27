@@ -387,9 +387,10 @@ except:
 if has_raw_data:
     for seed in seeds:
         print(f"\n  Seed {seed}:")
-        X_res, y_res = SMOTE(random_state=seed).fit_resample(X_raw, y_raw)
-        X_tr_s, X_tmp, y_tr_s, y_tmp = train_test_split(X_res, y_res, test_size=0.30, stratify=y_res, random_state=seed)
+        # CORRECT: Split FIRST, then SMOTE on training ONLY
+        X_tr_s, X_tmp, y_tr_s, y_tmp = train_test_split(X_raw, y_raw, test_size=0.30, stratify=y_raw, random_state=seed)
         X_val_s, X_te_s, y_val_s, y_te_s = train_test_split(X_tmp, y_tmp, test_size=0.50, stratify=y_tmp, random_state=seed)
+        X_tr_s, y_tr_s = SMOTE(random_state=seed).fit_resample(X_tr_s, y_tr_s)
         
         sc = StandardScaler()
         X_tr_s = sc.fit_transform(X_tr_s)
@@ -438,10 +439,10 @@ print("  SECTION 6: SUBGROUP ANALYSIS")
 print("=" * 60)
 
 if has_raw_data:
-    # Use the standard split for subgroup analysis
-    X_res2, y_res2 = SMOTE(random_state=42).fit_resample(X_raw, y_raw)
-    X_tr2, X_tmp2, y_tr2, y_tmp2 = train_test_split(X_res2, y_res2, test_size=0.30, stratify=y_res2, random_state=42)
+    # CORRECT: Split FIRST, then SMOTE on training ONLY
+    X_tr2, X_tmp2, y_tr2, y_tmp2 = train_test_split(X_raw, y_raw, test_size=0.30, stratify=y_raw, random_state=42)
     _, X_te2, _, y_te2 = train_test_split(X_tmp2, y_tmp2, test_size=0.50, stratify=y_tmp2, random_state=42)
+    X_tr2, y_tr2 = SMOTE(random_state=42).fit_resample(X_tr2, y_tr2)
     
     sc2 = StandardScaler()
     X_tr2 = sc2.fit_transform(X_tr2)

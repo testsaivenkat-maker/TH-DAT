@@ -68,11 +68,22 @@ print(f"\nFeatures ({N}):")
 for i, c in enumerate(feature_cols):
     print(f"  {i}: {c}")
 
-# SMOTE + Split
-X_res, y_res = SMOTE(random_state=42).fit_resample(X, y)
-print(f"\nAfter SMOTE: {X_res.shape[0]} ({sum(y_res==1)} depressed, {sum(y_res==0)} not)")
-X_tr, X_temp, y_tr, y_temp = train_test_split(X_res, y_res, test_size=0.30, stratify=y_res, random_state=42)
+# ============================================================
+# CORRECT PIPELINE: Split FIRST, then SMOTE on training ONLY
+# ============================================================
+# Step 1: Stratified split on ORIGINAL data
+X_tr, X_temp, y_tr, y_temp = train_test_split(X, y, test_size=0.30, stratify=y, random_state=42)
 X_val, X_te, y_val, y_te = train_test_split(X_temp, y_temp, test_size=0.50, stratify=y_temp, random_state=42)
+
+print(f"\nBefore SMOTE:")
+print(f"  Train: {X_tr.shape[0]} (Dep={sum(y_tr==1)}, Not={sum(y_tr==0)})")
+print(f"  Val:   {X_val.shape[0]} (ORIGINAL)")
+print(f"  Test:  {X_te.shape[0]} (ORIGINAL)")
+
+# Step 2: SMOTE ONLY on training set
+X_tr, y_tr = SMOTE(random_state=42).fit_resample(X_tr, y_tr)
+print(f"\nAfter SMOTE (training only):")
+print(f"  Train: {X_tr.shape[0]} (Dep={sum(y_tr==1)}, Not={sum(y_tr==0)})")
 
 scaler = StandardScaler()
 X_tr = scaler.fit_transform(X_tr)
@@ -80,6 +91,7 @@ X_val = scaler.transform(X_val)
 X_te = scaler.transform(X_te)
 
 print(f"X_tr: {X_tr.shape} | X_val: {X_val.shape} | X_te: {X_te.shape}")
+print("*** SMOTE applied to TRAINING SET ONLY ***")
 
 # Domain indices for Uganda
 # Demographic: age(0), occupation(1), education(2), hospital(9)
@@ -336,6 +348,7 @@ print("  CROSS-DATASET COMPARISON")
 print("=" * 60)
 peri = {'Random Forest': 0.9670, 'XGBoost': 0.9072, 'ANN': 0.8514,
         'TabTransformer': 0.9527, 'TH-DAT (Ours)': 0.9769}
+# NOTE: Update these PERI_DEP values after rerunning with corrected SMOTE pipeline
 print(f"\n{'Model':<20} {'PERI_DEP':>10} {'Uganda':>10} {'Avg':>10}")
 print("-" * 52)
 for name in results:

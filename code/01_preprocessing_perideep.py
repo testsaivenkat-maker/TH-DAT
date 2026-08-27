@@ -1,3 +1,8 @@
+"""
+TH-DAT Preprocessing — PERI_DEP Dataset
+FIXED: Split FIRST, then SMOTE on training set ONLY
+Validation and test sets contain ONLY original (non-synthetic) samples.
+"""
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -26,15 +31,37 @@ for i, c in enumerate(feature_cols_clean):
 X = SimpleImputer(strategy='median').fit_transform(df[feature_cols_clean].values)
 y = df['Label'].values
 
-X_res, y_res = SMOTE(random_state=42).fit_resample(X, y)
-X_tr, X_temp, y_tr, y_temp = train_test_split(X_res, y_res, test_size=0.30, stratify=y_res, random_state=42)
+print(f"\nOriginal data: {X.shape[0]} samples")
+print(f"  Depressed: {sum(y==1)} ({sum(y==1)/len(y)*100:.1f}%)")
+print(f"  Not depressed: {sum(y==0)} ({sum(y==0)/len(y)*100:.1f}%)")
+
+# ============================================================
+# CORRECT PIPELINE: Split FIRST, then SMOTE on training ONLY
+# ============================================================
+# Step 1: Stratified split on ORIGINAL data (no SMOTE yet)
+X_tr, X_temp, y_tr, y_temp = train_test_split(X, y, test_size=0.30, stratify=y, random_state=42)
 X_val, X_te, y_val, y_te = train_test_split(X_temp, y_temp, test_size=0.50, stratify=y_temp, random_state=42)
 
+print(f"\nBefore SMOTE:")
+print(f"  Train: {X_tr.shape[0]} (Dep={sum(y_tr==1)}, Not={sum(y_tr==0)})")
+print(f"  Val:   {X_val.shape[0]} (Dep={sum(y_val==1)}, Not={sum(y_val==0)})")
+print(f"  Test:  {X_te.shape[0]} (Dep={sum(y_te==1)}, Not={sum(y_te==0)})")
+
+# Step 2: SMOTE ONLY on training set
+X_tr, y_tr = SMOTE(random_state=42).fit_resample(X_tr, y_tr)
+
+print(f"\nAfter SMOTE (training only):")
+print(f"  Train: {X_tr.shape[0]} (Dep={sum(y_tr==1)}, Not={sum(y_tr==0)})")
+print(f"  Val:   {X_val.shape[0]} (ORIGINAL, untouched)")
+print(f"  Test:  {X_te.shape[0]} (ORIGINAL, untouched)")
+
+# Step 3: Scale (fit on training, transform val/test)
 scaler = StandardScaler()
 X_tr = scaler.fit_transform(X_tr)
 X_val = scaler.transform(X_val)
 X_te = scaler.transform(X_te)
 
+# Step 4: Save
 np.save('/content/X_tr.npy', X_tr)
 np.save('/content/X_val.npy', X_val)
 np.save('/content/X_te.npy', X_te)
@@ -42,7 +69,10 @@ np.save('/content/y_tr.npy', y_tr)
 np.save('/content/y_val.npy', y_val)
 np.save('/content/y_te.npy', y_te)
 
-print("\nX_tr:", X_tr.shape)
-print("X_val:", X_val.shape)
-print("X_te:", X_te.shape)
+print(f"\nFinal shapes:")
+print(f"  X_tr: {X_tr.shape}")
+print(f"  X_val: {X_val.shape}")
+print(f"  X_te: {X_te.shape}")
 print("\n.npy files saved to /content/")
+print("\n*** SMOTE applied to TRAINING SET ONLY ***")
+print("*** Validation and test sets are 100% original data ***")
