@@ -427,8 +427,45 @@ plt.close()
 print("  Saved: plot8_confusion_matrices.png")
 
 
+# ═══════════════════════════════════════════
+# PLOT 9: Calibration Plot
+# ═══════════════════════════════════════════
+print("Generating Plot 9: Calibration Plot...")
+
+from sklearn.calibration import calibration_curve
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+models_cal = [
+    ('TH-DAT (Ours)', thdat_probs, '#FF4444', '-', 2.5),
+    ('Random Forest', rf_probs, '#4488CC', '--', 2.0),
+    ('XGBoost', xgb_probs, '#44AA88', '-.', 1.8),
+    ('TabTransformer', tabtf_probs, '#FF8844', ':', 1.8),
+]
+
+for name, probs, color, ls, lw in models_cal:
+    prob_true, prob_pred = calibration_curve(y_te, probs, n_bins=10, strategy='uniform')
+    ax.plot(prob_pred, prob_true, color=color, linestyle=ls, linewidth=lw,
+            marker='o', markersize=5, label=name)
+
+ax.plot([0, 1], [0, 1], 'k--', alpha=0.5, linewidth=1, label='Perfectly calibrated')
+ax.set_xlabel('Mean Predicted Probability', fontsize=13)
+ax.set_ylabel('Fraction of Positives', fontsize=13)
+ax.set_title('Calibration Plot: Observed vs. Predicted Probability', fontsize=14, fontweight='bold')
+ax.legend(loc='lower right', fontsize=10)
+ax.set_xlim([-0.02, 1.02])
+ax.set_ylim([-0.02, 1.02])
+ax.grid(True, alpha=0.3)
+ax.set_aspect('equal')
+
+plt.tight_layout()
+plt.savefig('/content/plot9_calibration.png', dpi=150, bbox_inches='tight')
+plt.close()
+print("  Saved: plot9_calibration.png")
+
+
 print("\n" + "=" * 50)
-print("  ALL 8 PLOTS GENERATED SUCCESSFULLY!")
+print("  ALL 9 PLOTS GENERATED SUCCESSFULLY!")
 print("=" * 50)
 print("\nFiles saved in /content/:")
 print("  1. plot1_model_comparison.png     - 12-Model AUC-ROC Bar Chart")
@@ -439,4 +476,5 @@ print("  5. plot5_results_table.png        - Full Results Table")
 print("  6. plot6_category_comparison.png  - Category Comparison")
 print("  7. plot7_roc_pr_curves.png        - ROC + PR Curves")
 print("  8. plot8_confusion_matrices.png   - Confusion Matrices")
+print("  9. plot9_calibration.png          - Calibration Plot")
 print("\nDownload them from Colab file browser (left sidebar)!")
