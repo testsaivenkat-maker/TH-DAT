@@ -1,0 +1,5 @@
+Test,Rank_Corr,95CI
+Bootstrap (1000),1.0000,(1.0000-1.0000)
+Perturbation sigma=0.01,1.0000,(1.0000-1.0000)
+Perturbation sigma=0.05,1.0000,(1.0000-1.0000)
+Perturbation sigma=0.1,1.0000,(1.0000-1.0000)

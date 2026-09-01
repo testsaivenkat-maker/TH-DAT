@@ -1,0 +1,17 @@
+Feature,Domain,Type,Mean,Std,Missing
+Age,Demographic,Continuous,28.06,5.13,0.0%
+Gestational Age,Demographic,Continuous,31.05,3.85,0.0%
+Number of sons ,Obstetric,Categorical,1.07,1.13,0.0%
+Number of daughters,Obstetric,Categorical,1.09,1.16,0.0%
+Total Number of Children,Obstetric,Categorical,2.16,1.47,0.0%
+Gravida,Obstetric,Categorical,0.52,0.88,0.0%
+Female Education,Demographic,Categorical,2.95,1.98,0.0%
+Husband Education,Demographic,Categorical,3.27,2.03,0.0%
+Working Status,Demographic,Categorical,0.38,0.68,0.0%
+Physical Health ,Psychological,Categorical,0.99,0.11,0.0%
+Previous Miscarriage,Demographic,Categorical,0.76,1.01,0.0%
+Sufficient Money for Basic Needs,Demographic,Categorical,2.11,1.05,0.0%
+Current Appereance Acceptance,Demographic,Categorical,1.59,1.58,0.0%
+Family System,Demographic,Categorical,0.33,0.47,0.0%
+Male Gender Preference,Obstetric,Categorical,2.11,1.04,0.0%
+Relationship with Mother in-law,Psychological,Categorical,1.51,0.73,0.0%

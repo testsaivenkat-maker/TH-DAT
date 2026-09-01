@@ -1,0 +1,2 @@
+AUC,Brier_Before,ECE_Before,MCE_Before,Brier_After_Platt,ECE_After_Platt,MCE_After_Platt
+0.715 (0.693-0.737),0.205 (0.200-0.210),0.098 (0.081-0.116),0.246 (0.138-0.521),0.195 (0.187-0.203),0.028 (0.016-0.042),0.138 (0.069-0.259)
